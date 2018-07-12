@@ -17,7 +17,10 @@ int main(){
 
 
 	for (Token tok:tokens){
-		cout <<"Token of kind " << tok.kind << "with val " << tok.value <<"\n";
+		if(tok.kind == '8')
+            cout << "A number of val " << tok.value << "\n";
+        else
+            cout <<"Token of kind " << tok.kind <<"\n";
 	}
 }
 Token get_token(){
