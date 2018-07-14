@@ -9,19 +9,15 @@ Token get_token();
 vector<Token> tokens;
 
 int main(){
-	Token t = get_token();
-	while(t.kind != 'q'){
-		tokens.push_back(t);
-		t = get_token();
-	}
-
+	for(Token t = get_token(); t.kind != 'q';t = get_token()){
+        tokens.push_back(t);}
 
 	for (Token tok:tokens){
 		if(tok.kind == '8')
             cout << "A number of val " << tok.value << "\n";
         else
             cout <<"Token of kind " << tok.kind <<"\n";
-	}
+	}   
 }
 Token get_token(){
     char ch;
@@ -38,3 +34,4 @@ Token get_token(){
         }
     }
 }
+
