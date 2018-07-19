@@ -161,7 +161,6 @@ void calculate(){
        try{
         cout << prompt;
         Token t = ts.get();
-        cout << "in main(), got token: " << t.kind << " with val of "<< t.val << '\n';
         while (t.kind == print) t = ts.get();
        if (t.kind == quit) return;
        ts.putback(t);
