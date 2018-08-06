@@ -1,11 +1,12 @@
 #include "std_lib_facilities.h"
 #include "token.h"
 #include "vars.h"
-
+#include "funcs.h"
 
 double statement(Token_stream& ts);
 double term(Token_stream& ts);
 double primary(Token_stream& ts);
+double expon(Token_stream& ts);
 double expression(Token_stream& ts);
 
 double statement(Token_stream& ts){
@@ -54,18 +55,18 @@ double expression(Token_stream& ts){
 }
 
 double term(Token_stream& ts){
-    double left = primary(ts);
+    double left = expon(ts);
     Token t = ts.get();
 
     while(true){
         switch(t.kind){
         case '*':
-            left *= primary(ts);
+            left *= expon(ts);
             t = ts.get();
             break;
         case '/':
             {
-            double d = primary(ts);
+            double d = expon(ts);
             if (d==0) error("divide by zero");
             left /= d;
             t = ts.get();
@@ -73,7 +74,7 @@ double term(Token_stream& ts){
 
             }
         case '%':{
-            double d = primary(ts);
+            double d = expon(ts);
             if (d==0) error("divide by zero");
             left = fmod(left,d);
             t = ts.get();
@@ -112,17 +113,32 @@ double primary(Token_stream& ts){
         }
     case number:
         return t.val;
+    case name:
+        {
+            Token next_t = ts.get();
+            if (next_t.kind == '(') {
+                double d = expression(ts);
+                next_t = ts.get();
+                if (next_t.kind != ')') throw runtime_error("')' expected");
+                d = exec_funct(t.name,d);
+                return d;
+            }
+            else{
+                ts.putback(next_t);
+                return get_value(t.name);
+            }
+        }
     case '-':
-        return -primary(ts);
+        return -(primary(ts));
     case '+':
         return primary(ts);
-    case name:
-        return get_value(t.name);
     default:
-        error("Primary expected");
+        string s(1, t.kind);
+        throw runtime_error("Primary expected; got: " +s);
     }
     return 0.0;
 }
+
 void clean_up_mess(Token_stream& ts){
     ts.ignore(print);
 }
@@ -158,3 +174,4 @@ int main(){
     }
 
 }
+
